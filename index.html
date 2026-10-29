@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Çevre Dostu Yaşam Asistanı</title>
+  <link rel="stylesheet" href="stil.css">
+</head>
+<body>
+
+  <!-- ÜST MENÜ -->
+  <header class="ust">
+    <div class="ust-ic">
+      <a class="logo" href="#ana">🌿 Çevre Dostu Yaşam</a>
+      <nav class="menu" aria-label="Ana menü">
+        <a href="#ana" data-sayfa="ana">Ana Sayfa</a>
+        <a href="#geridonusum" data-sayfa="geridonusum">Geri Dönüşüm</a>
+        <a href="#tasarruf" data-sayfa="tasarruf">Su &amp; Enerji</a>
+        <a href="#gorevler" data-sayfa="gorevler">Görevler</a>
+        <a href="#asistan" data-sayfa="asistan">Asistan</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- 1) ANA SAYFA -->
+    <section id="ana" class="sayfa">
+      <div class="karsilama">
+        <p class="kucuk" id="selam">Merhaba!</p>
+        <h1>Gezegene iyi gelen küçük adımlar 🌍</h1>
+        <p>Bugün birlikte neyi daha yeşil yapabiliriz? Geri dönüşümü öğren, tasarruf et, günlük görevleri tamamla.</p>
+        <div class="isim-satiri">
+          <label for="isimGirdisi">Adın:</label>
+          <input id="isimGirdisi" type="text" maxlength="20" placeholder="İsmini yaz">
+          <button id="isimKaydet" class="buton">Kaydet</button>
+        </div>
+      </div>
+
+      <div class="izgara uc">
+        <article class="kart ozet">
+          <h3>Bugünkü ilerlemen</h3>
+          <p class="buyuk" id="ozetSayi">0 / 6</p>
+          <div class="cubuk"><div id="ozetCubuk"></div></div>
+          <button class="buton" data-git="gorevler">Görevlere git</button>
+        </article>
+        <article class="kart ozet">
+          <h3>Günün ipucu 💡</h3>
+          <p id="gununIpucu"></p>
+          <button class="buton ikincil" id="yeniIpucu">Başka ipucu</button>
+        </article>
+        <article class="kart ozet">
+          <h3>Hızlı erişim</h3>
+          <div class="hizli">
+            <button class="buton ikincil" data-git="geridonusum">♻️ Bu nereye atılır?</button>
+            <button class="buton ikincil" data-git="tasarruf">💧 Tasarruf hesapla</button>
+            <button class="buton ikincil" data-git="asistan">🤖 Asistana sor</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 2) GERİ DÖNÜŞÜM -->
+    <section id="geridonusum" class="sayfa" hidden>
+      <h2>♻️ Geri Dönüşüm Rehberi</h2>
+      <p class="aciklama">Atığın adını yaz, hangi kutuya gideceğini görelim.</p>
+
+      <div class="arama">
+        <input id="atikAra" type="search" placeholder="Örn: pet şişe, pil, ampul, kola kutusu…" aria-label="Atık ara">
+        <button id="atikAraBtn" class="buton">Ara</button>
+      </div>
+      <div id="aramaSonuc" class="arama-sonuc" aria-live="polite"></div>
+
+      <h3>Kategoriler</h3>
+      <div id="kategoriler" class="izgara uc"></div>
+      <p class="not">Not: Kutu renkleri ve kuralları belediyeden belediyeye değişebilir. Emin değilsen yerel belediyenin bilgisine bak.</p>
+    </section>
+
+    <!-- 3) SU & ENERJİ -->
+    <section id="tasarruf" class="sayfa" hidden>
+      <h2>💧⚡ Su ve Enerji Tasarrufu</h2>
+
+      <div class="sekmeler" role="tablist">
+        <button class="sekme aktif" data-sekme="su" role="tab">💧 Su</button>
+        <button class="sekme" data-sekme="enerji" role="tab">⚡ Enerji</button>
+      </div>
+      <div id="ipucuListesi" class="izgara uc"></div>
+
+      <div class="kart hesap">
+        <h3>🚿 Duş tasarrufu hesaplayıcı</h3>
+        <p class="aciklama">Ortalama bir duş başlığının dakikada yaklaşık 9 litre su harcadığını varsayıyoruz (yaklaşık bir değerdir).</p>
+        <div class="hesap-satir">
+          <label>Şimdiki duş süren (dk)
+            <input id="dusSimdi" type="number" min="1" max="60" value="10">
+          </label>
+          <label>Hedef süre (dk)
+            <input id="dusHedef" type="number" min="1" max="60" value="5">
+          </label>
+          <button id="hesaplaBtn" class="buton">Hesapla</button>
+        </div>
+        <p id="hesapSonuc" class="hesap-sonuc" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- 4) GÖREVLER -->
+    <section id="gorevler" class="sayfa" hidden>
+      <h2>✅ Günlük Çevre Görevleri</h2>
+      <p class="aciklama" id="tarihYazi"></p>
+
+      <div class="kart">
+        <div class="gorev-ust">
+          <strong id="gorevSayac">0 / 6 tamamlandı</strong>
+          <span class="puan" id="gorevPuan">0 puan</span>
+        </div>
+        <div class="cubuk"><div id="gorevCubuk"></div></div>
+        <p id="gorevMesaj" class="gorev-mesaj" aria-live="polite"></p>
+      </div>
+
+      <ul id="gorevListesi" class="gorev-listesi"></ul>
+      <button id="gorevSifirla" class="buton ikincil">Bugünü sıfırla</button>
+    </section>
+
+    <!-- 5) YAPAY ZEKÂ ASİSTANI (DEMO) -->
+    <section id="asistan" class="sayfa" hidden>
+      <h2>🤖 Çevre Asistanı</h2>
+      <div class="uyari">
+        <strong>DEMO modu:</strong> Bu bölümde gerçek bir yapay zekâ bağlantısı yoktur.
+        Cevaplar, hazırlanmış örnek yanıtlardan anahtar kelimeye göre seçilir.
+        İnternete bağlanmaz ve soruların hiçbir yere gönderilmez.
+      </div>
+
+      <div class="sohbet-kutu">
+        <div id="sohbet" class="sohbet" aria-live="polite"></div>
+        <div id="oneriler" class="oneriler"></div>
+        <form id="sohbetForm" class="sohbet-form" autocomplete="off">
+          <input id="soruGirdisi" type="text" placeholder="Sorunu yaz… (örn: Pil nereye atılır?)" aria-label="Sorunuz">
+          <button type="submit" class="buton">Gönder</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="alt">
+    <p>🌱 Çevre Dostu Yaşam Asistanı · Eğitim amaçlı MVP prototipi · Asistan bölümü demodur.</p>
+  </footer>
+
+  <script src="uygulama.js"></script>
+</body>
+</html>
