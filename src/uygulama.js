@@ -30,14 +30,14 @@ const hafiza = {
 
 // Türkçe harfleri sadeleştirir: "Şişe Camı" -> "sise cami" (aramayı kolaylaştırır)
 function sadelestir(metin) {
-  return metin
-    .toLocaleLowerCase("tr-TR")
+  return String(metin)
+    .replace(/İ/g, "i")               // büyük noktalı İ -> i
+    .replace(/I/g, "ı")               // büyük I -> ı (Türkçe kuralı)
+    .toLowerCase()
     .replace(/ı/g, "i")
-    .replace(/ğ/g, "g")
-    .replace(/ü/g, "u")
-    .replace(/ş/g, "s")
-    .replace(/ö/g, "o")
-    .replace(/ç/g, "c")
+    .normalize("NFD")                 // ç ş ğ ö ü â î û ... harf + işaret olarak ayrılır
+    .replace(/[̀-ͯ]/g, "")  // işaretleri sil: ç->c ş->s ğ->g ö->o ü->u â->a
+    .replace(/['’‘`´ʼ]/g, "")         // kesme işareti: pil'i -> pili
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -331,7 +331,7 @@ function gorevleriCiz() {
     btn.type = "button";
     btn.setAttribute("role", "checkbox");
     btn.setAttribute("aria-checked", String(tamamlananlar.includes(g.id)));
-    btn.appendChild(oge("span", "kutu", "âœ“"));
+    btn.appendChild(oge("span", "kutu", "✓"));
     btn.appendChild(oge("span", "metin", g.metin));
     btn.appendChild(oge("span", "gp", `+${g.puan}`));
     btn.addEventListener("click", () => gorevDegistir(g.id));
@@ -373,56 +373,174 @@ $("#tarihYazi").textContent =
    bir yapay zekâ servisine bağlanmak gerekir (OKU-BENI.md dosyasına bak).
    API anahtarını asla bu dosyaya yazma: herkes görebilir! */
 const DEMO_CEVAPLAR = [
-  { k: ["merhaba", "selam", "slm", "naber"], c: "Merhaba! ğŸŒ¿ Ben demo asistanım. Geri dönüşüm, su ve enerji tasarrufu hakkında hazır örnek cevaplarım var." },
-  { k: ["tesekkur", "sagol", "eyvallah"], c: "Rica ederim! Gezegen için bir adım daha attın. ğŸŒ" },
-  { k: ["atik pil", "pil kutusu", "atık pil kutusuna", "düğme pil", "sarzli pil", "sarjli pil"], c: "Atık pilleri (kalem pil, düğme pil ve küçük şarjlı piller) asla çöpe atma! Market, okul, belediye veya eczanelerdeki atık pil toplama kutularına bırak. İçindeki ağır metaller toprağa ve suya zarar verir. ğŸ”‹" },
-  { k: ["pil", "piller", "batarya", "bataryalar"], c: "Pilleri çöpe atma! Kalem pil, düğme pil ve küçük şarjlı pilleri atık pil kutularına bırak. Büyük araç aküleri gibi özel atıklar için belediyenin yönergelerini kontrol et. ğŸ”‹" },
-  { k: ["pet sise", "pet siseleri", "pet siseyi", "su siseyi", "meşrubat sisesi"], c: "PET su/meşrubat şişelerini boşaltıp çalkala, kapağını takarak hafifçe ezip sarı (plastik) kutuya at. Ne kadar az yer kaplarsa o kadar kolay taşınır. â™»ï¸" },
-  { k: ["sari kutu"], c: "Plastik ambalajlar genellikle sarı kutuya gider. Åişeleri durulayıp, kapağını takarak atman daha iyi sonuç verir. Yağlı ve çok kirli plastikler her zaman geri dönüştürülemeyebilir. â™»ï¸" },
-  { k: ["plastik", "plastikler", "poşet", "naylon poşet"], c: "Plastik ambalajları mümkünse durulayarak, kapağını takarak sarı kutuya at. Bez çanta kullanarak tek kullanımlık poşet tüketimini azaltabilirsin. Çok kirli veya yağlı plastikler genel çöpe gidebilir. â™»ï¸" },
-  { k: ["cam sise", "cam kavanoz", "cam siseleri", "cam kavanozu"], c: "Temiz cam şişe ve kavanozları yeşil (cam) kutuya at. İçlerini boşaltıp çalkalaman genellikle yeterlidir. Kapağı metal veya plastikse ayrı olarak değerlendirebilirsin. ğŸ«™" },
-  { k: ["yesil kutu"], c: "Temiz cam şişe ve kavanozlar yeşil kutuya gider. Ayna, pencere camı, porselen, seramik ve kristal cam kutusuna atılmaz. ğŸ«™" },
-  { k: ["cam", "camlar"], c: "Cam şişe ve kavanozlar yeşil kutuya gider. İçlerini boşaltıp hafifçe çalkala. Ayna, ampul, porselen, seramik ve kırık ev camı geri dönüşüm camına karışmamalıdır. ğŸ«™" },
-  { k: ["karton kutu", "pizza kutusu", "süt kutusu", "karton ambalaj"], c: "Kuru karton kutuları düzleştirerek mavi (kâğıt) kutuya at. Yağlı pizza kutusunun yağlı kısmı geri dönüştürülemez, o kısmı genel çöpe at. Süt/karton içecek kutuları belediyene göre farklı değerlendirilebilir. ğŸ“„" },
-  { k: ["mavi kutu"], c: "Kuru gazete, dergi, defter ve kartonlar mavi kutuya gider. Islak, yağlı veya çok kirli kâğıtlar genellikle geri dönüştürülemez. ğŸ“„" },
-  { k: ["kagit", "kagitlar", "karton", "gazete", "defter"], c: "Kuru kâğıt ve kartonlar mavi kutuya gider. Kâğıt mendil, peçete, yağlı kâğıt ve ıslak kâğıtlar geri dönüştürülemez; genellikle genel çöpe gider. ğŸ“„" },
-  { k: ["metal", "teneke", "konserve kutusu", "aluminyum folyo", "alüminyum folyo", "kola kutusu"], c: "Temiz içecek kutuları, konserve kutuları ve temiz alüminyum folyolar gri (metal) kutuya atılır. İçlerini çalkalamak yeterli, keskin kenarlara dikkat et. ğŸ¥«" },
-  { k: ["ampul", "floresan", "elektronik atik", "eski telefon", "sarj aleti", "kulaklik"], c: "Ampul, floresan lamba, eski telefon, şarj aleti gibi elektronik atıklar genel çöpe atılmaz. Belediyenin veya mağazaların elektronik atık toplama noktalarına teslim et. âš ï¸" },
+  { k: ["merhaba", "selam", "slm", "naber"], c: "Merhaba! 🌿 Ben demo asistanım. Geri dönüşüm, su ve enerji tasarrufu hakkında hazır örnek cevaplarım var." },
+  { k: ["tesekkur", "sagol", "eyvallah"], c: "Rica ederim! Gezegen için bir adım daha attın. 🌍" },
+  { k: ["atik pil", "pil kutusu", "atık pil kutusuna", "düğme pil", "sarzli pil", "sarjli pil"], c: "Atık pilleri (kalem pil, düğme pil ve küçük şarjlı piller) asla çöpe atma! Market, okul, belediye veya eczanelerdeki atık pil toplama kutularına bırak. İçindeki ağır metaller toprağa ve suya zarar verir. 🔋" },
+  { k: ["pil", "piller", "batarya", "bataryalar"], c: "Pilleri çöpe atma! Kalem pil, düğme pil ve küçük şarjlı pilleri atık pil kutularına bırak. Büyük araç aküleri gibi özel atıklar için belediyenin yönergelerini kontrol et. 🔋" },
+  { k: ["pet sise", "pet siseleri", "pet siseyi", "su siseyi", "meşrubat sisesi"], c: "PET su/meşrubat şişelerini boşaltıp çalkala, kapağını takarak hafifçe ezip sarı (plastik) kutuya at. Ne kadar az yer kaplarsa o kadar kolay taşınır. ♻️" },
+  { k: ["sari kutu"], c: "Plastik ambalajlar genellikle sarı kutuya gider. Şişeleri durulayıp, kapağını takarak atman daha iyi sonuç verir. Yağlı ve çok kirli plastikler her zaman geri dönüştürülemeyebilir. ♻️" },
+  { k: ["plastik", "plastikler", "poşet", "naylon poşet"], c: "Plastik ambalajları mümkünse durulayarak, kapağını takarak sarı kutuya at. Bez çanta kullanarak tek kullanımlık poşet tüketimini azaltabilirsin. Çok kirli veya yağlı plastikler genel çöpe gidebilir. ♻️" },
+  { k: ["cam sise", "cam kavanoz", "cam siseleri", "cam kavanozu"], c: "Temiz cam şişe ve kavanozları yeşil (cam) kutuya at. İçlerini boşaltıp çalkalaman genellikle yeterlidir. Kapağı metal veya plastikse ayrı olarak değerlendirebilirsin. 🫙" },
+  { k: ["yesil kutu"], c: "Temiz cam şişe ve kavanozlar yeşil kutuya gider. Ayna, pencere camı, porselen, seramik ve kristal cam kutusuna atılmaz. 🫙" },
+  { k: ["cam", "camlar"], c: "Cam şişe ve kavanozlar yeşil kutuya gider. İçlerini boşaltıp hafifçe çalkala. Ayna, ampul, porselen, seramik ve kırık ev camı geri dönüşüm camına karışmamalıdır. 🫙" },
+  { k: ["karton kutu", "pizza kutusu", "süt kutusu", "karton ambalaj"], c: "Kuru karton kutuları düzleştirerek mavi (kâğıt) kutuya at. Yağlı pizza kutusunun yağlı kısmı geri dönüştürülemez, o kısmı genel çöpe at. Süt/karton içecek kutuları belediyene göre farklı değerlendirilebilir. 📄" },
+  { k: ["mavi kutu"], c: "Kuru gazete, dergi, defter ve kartonlar mavi kutuya gider. Islak, yağlı veya çok kirli kâğıtlar genellikle geri dönüştürülemez. 📄" },
+  { k: ["kagit", "kagitlar", "karton", "gazete", "defter"], c: "Kuru kâğıt ve kartonlar mavi kutuya gider. Kâğıt mendil, peçete, yağlı kâğıt ve ıslak kâğıtlar geri dönüştürülemez; genellikle genel çöpe gider. 📄" },
+  { k: ["metal", "teneke", "konserve kutusu", "aluminyum folyo", "alüminyum folyo", "kola kutusu"], c: "Temiz içecek kutuları, konserve kutuları ve temiz alüminyum folyolar gri (metal) kutuya atılır. İçlerini çalkalamak yeterli, keskin kenarlara dikkat et. 🥫" },
+  { k: ["ampul", "floresan", "elektronik atik", "eski telefon", "sarj aleti", "kulaklik"], c: "Ampul, floresan lamba, eski telefon, şarj aleti gibi elektronik atıklar genel çöpe atılmaz. Belediyenin veya mağazaların elektronik atık toplama noktalarına teslim et. ⚠️" },
   { k: ["lavaboya dökebilir miyim", "lavaboya dokebilir miyim", "kizartma yagini lavaboya dokebilir miyim", "kullanılmış yağı lavaboya dökebilir miyim", "kullanilmis yagi lavaboya dokebilir miyim"], c: "Hayır, kullanılmış yemek veya kızartma yağını lavaboya dökmemelisin. Yağ soğuduğunda katılaşarak boruları tıkayabilir, arıtma tesislerine zarar verebilir ve su kirliliğine yol açar. 🛢️" },
   { k: ["kullanılmış yemek yağını ne yapmalıyım", "kullanilmis yemek yagini ne yapmaliyim", "yemek yağını ne yapmalıyım", "yemek yagini ne yapmaliyim", "kullanılmış yemek yağını nasıl değerlendiririm"], c: "Yağın tamamen soğumasını bekle. Ardından sızdırmaz, uygun bir kapta (ör. boş plastik şişe) biriktir. Kapağını sıkıca kapattıktan sonra belediyenin veya çevrendeki yetkili atık yağ toplama noktasının kabul koşullarını kontrol ederek teslim et. 🛢️" },
   { k: ["atık yağ nereye dökülür", "atik yag nereye dokulur", "kullanılmış yağ nereye dökülür", "kullanilmis yag nereye dokulur"], c: "Atık yağ asla lavaboya veya toprağa dökülmemelidir. Hem boruları tıkayabilir hem de yer altı sularını kirletebilir. Yağı sızdırmaz bir kapta biriktirip, yetkili bir atık yağ toplama noktasına vermen gerekir. 🛢️" },
   { k: ["kullanılmış yağı nereye verebilirim", "kullanilmis yagi nereye verebilirim", "kullanılmış yemek yağını nereye verebilirim", "kullanilmis yemek yagini nereye verebilirim"], c: "Bölgendeki belediyenin atık yağ toplama hizmetini veya yetkili atık yağ toplama noktasını kontrol etmeni öneririm. Birçok belediye belirli günlerde toplama yapar, bazı noktalarda ise doğrudan teslim kabulü yapar. 🛢️" },
   { k: ["atik yagi", "atık yağ", "kizartma yagi", "kizartma yağı", "kullanilmis yag", "yag biriktirmek", "kullanılmış yemek yağı", "kullanılmış yemek yagi", "kullanilmis yemek yagi", "kullanilmis yemek yağı", "yemek yagi", "yemek yağı"], c: "Kullanılmış yemek veya kızartma yağını lavaboya veya toprağa dökme. Yağ tamamen soğuyunca sızdırmaz bir kapta biriktirip, belediyenin belirttiği atık yağ toplama noktasına teslim et. 🛢️" },
-  { k: ["ilac", "ilaclar", "son kullanma tarihi gecmis ilac", "kullanilmamis ilac"], c: "Kullanılmayan veya son kullanma tarihi geçmiş ilaçları çöpe veya tuvalete atma. Eczanelerdeki atık ilaç kutularına bırak. ğŸ’Š" },
-  { k: ["kompost", "bahce kompostu", "ev kompostu", "komposta atmak"], c: "Meyve-sebze kabuğu, çay telvesi ve temiz yumurta kabuğu ev kompostu için uygundur. Et, kemik, süt ürünleri, yağlı yemek artıkları ve bazı işlenmiş ürünler ev kompostuna genellikle uygun değildir. ğŸ" },
-  { k: ["organik atik", "meyve kabugu", "sebze kabugu", "cay telvesi", "yumurta kabugu"], c: "Meyve-sebze kabuğu, çay telvesi ve temiz yumurta kabukları organik atıktır. Bahçen varsa kompost yapabilir, YOKsa belediyenin organik atık toplama sistemine göre değerlendir. ğŸ" },
-  { k: ["su tasarrufu", "su israfi", "muslugu kapat", "damlayan musluk"], c: "Su tasarrufu için pratik yollar: diş fırçalarken musluğu kapat, damlayan musluğu tamir ettir, bulaşık ve çamaşır makinelerini tam dolu çalıştır, bitkileri sabah veya akşam sula. Su ve Enerji sayfasındaki duş hesaplayıcısını da deneyebilirsin. ğŸ’§" },
-  { k: ["dus", "dus suyu", "kisa dus", "dus süresi"], c: "Duşu kısa tutmak en kolay su tasarrufu yöntemidir. 10 dakikalık duşu 5 dakikaya indirmek günde onlarca litre su kazandırabilir. Su ve Enerji sayfasındaki duş tasarrufu hesaplayıcısıyla ne kadar tasarruf edebileceğini görebilirsin. ğŸš¿" },
-  { k: ["elektrik tasarrufu", "fatura dusurmek", "faturayi dusurmek", "elektrik faturasını dusurmek"], c: "Elektrik tasarrufu için: LED ampul kullan, kullanmadığın cihazların fişini çek (bekleme modundaki cihazlar da enerji harcar), gün ışığından yararlan, kışın termostatı bir derece düşür ve kısa mesafeleri yürü/bisikletle git. âš¡" },
-  { k: ["enerji", "led ampul", "fisini cek", "bekleme modu"], c: "Enerji tasarrufu için pratik öneriler: LED ampul kullan, kullanmadığın cihazların fişini çek, pencere/kapı aralıklarını kontrol et, çamaşırları mümkünse açıkta kurut ve bilgisayarı kullanmıyorsan uyku moduna al. âš¡" },
-  { k: ["isitma", "kalorifer", "termostat", "klima"], c: "Isıtma giderlerini azaltmak için termostatı 1 derece düşürmek bile fark yaratabilir. Kalın giyinmek, perdeleri gece kapatmak ve pencere/kapı aralıklarını yalıtmak da etkili yöntemlerdir. ğŸŒ¡ï¸" },
-  { k: ["cevre dostu temizlik", "dogal temizlik", "ev yapimi temizlik", "beyaz sirke temizlik"], c: "Seyreltilmiş beyaz sirke, karbonat ve limon suyu birçok yüzey için çevre dostu ve ucuz temizlik alternatifidir. Ancak mermer ve bazı hassas taş yüzeylerde sirke kullanılmamalıdır. Güçlü sentetik kimyasallara göre daha az kirletici olabilir. ğŸŒ¿" },
-  { k: ["temizlik urunleri", "yuzey temizleyici", "bulasik deterjani", "konsantre temizlik"], c: "Mümkünse konsantre ürünler, geri dönüştürülebilir ambalajlı veya yeniden dolumlu temizlik ürünlerini tercih et. Aşırı miktarda ürün kullanmak yerine dozajına dikkat etmek hem bütçene hem çevreye yardımcı olur. ğŸŒ¿" },
-  { k: ["geri donusum", "donusum", "sifir atik", "ayristirmak", "nereden atilir"], c: "Geri dönüşümün temeli: ayır, durula, doğru kutuya at. Atık adını Geri Dönüşüm sayfasındaki arama kutusuna yazarak nereye atılacağını bulabilirsin. Kutu renkleri ve kurallar belediyeden belediyeye değişebilir. â™»ï¸" },
-  { k: ["gorev", "gorevler", "puan", "ilerleme"], c: "Günlük görevler sayfasında 6 görev var. Tamamladıkça işaretle, puanlarını ve ilerleme çubuğunu gör! âœ…" },
-  { k: ["poset", "alisveris cantasi", "bez canta"], c: "Bez çanta kullanmak plastik poşet tüketimini azaltır. Poşet aldıysan çöp poşeti olarak yeniden kullan. ğŸ›ï¸" }
+  { k: ["ilac", "ilaclar", "son kullanma tarihi gecmis ilac", "kullanilmamis ilac"], c: "Kullanılmayan veya son kullanma tarihi geçmiş ilaçları çöpe veya tuvalete atma. Eczanelerdeki atık ilaç kutularına bırak. 💊" },
+  { k: ["kompost", "bahce kompostu", "ev kompostu", "komposta atmak"], c: "Meyve-sebze kabuğu, çay telvesi ve temiz yumurta kabuğu ev kompostu için uygundur. Et, kemik, süt ürünleri, yağlı yemek artıkları ve bazı işlenmiş ürünler ev kompostuna genellikle uygun değildir. 🍎" },
+  { k: ["organik atik", "meyve kabugu", "sebze kabugu", "cay telvesi", "yumurta kabugu"], c: "Meyve-sebze kabuğu, çay telvesi ve temiz yumurta kabukları organik atıktır. Bahçen varsa kompost yapabilir, YOKsa belediyenin organik atık toplama sistemine göre değerlendir. 🍎" },
+  { k: ["su tasarrufu", "su israfi", "muslugu kapat", "damlayan musluk"], c: "Su tasarrufu için pratik yollar: diş fırçalarken musluğu kapat, damlayan musluğu tamir ettir, bulaşık ve çamaşır makinelerini tam dolu çalıştır, bitkileri sabah veya akşam sula. Su ve Enerji sayfasındaki duş hesaplayıcısını da deneyebilirsin. 💧" },
+  { k: ["dus", "dus suyu", "kisa dus", "dus süresi"], c: "Duşu kısa tutmak en kolay su tasarrufu yöntemidir. 10 dakikalık duşu 5 dakikaya indirmek günde onlarca litre su kazandırabilir. Su ve Enerji sayfasındaki duş tasarrufu hesaplayıcısıyla ne kadar tasarruf edebileceğini görebilirsin. 🚿" },
+    { k: ["elektrik tasarrufu", "fatura dusurmek", "faturayi dusurmek", "elektrik faturasını dusurmek"], c: "Elektrik tasarrufu için: LED ampul kullan, kullanmadığın cihazların fişini çek (bekleme modundaki cihazlar da enerji harcar), gün ışığından yararlan, kışın termostatı bir derece düşür ve kısa mesafeleri yürü/bisikletle git. ⚡" },
+  { k: ["enerji", "ışık", "lamba", "led ampul", "fisini cek", "bekleme modu"], c: "Enerji tasarrufu için kullanmadığın odaların ışıklarını kapat, LED ampul kullan, kullanmadığın cihazların fişini çek, çamaşırları mümkünse açıkta kurut ve bilgisayarı kullanmıyorsan uyku moduna al. Gün ışığından da yararlanabilirsin. ⚡" },
+  { k: ["isitma", "kalorifer", "termostat", "klima"], c: "Isıtma giderlerini azaltmak için termostatı 1 derece düşürmek bile fark yaratabilir. Kalın giyinmek, perdeleri gece kapatmak ve pencere/kapı aralıklarını yalıtmak da etkili yöntemlerdir. 🌡️" },
+  { k: ["cevre dostu temizlik", "dogal temizlik", "ev yapimi temizlik", "beyaz sirke temizlik"], c: "Seyreltilmiş beyaz sirke, karbonat ve limon suyu birçok yüzey için çevre dostu ve ucuz temizlik alternatifidir. Ancak mermer ve bazı hassas taş yüzeylerde sirke kullanılmamalıdır. Güçlü sentetik kimyasallara göre daha az kirletici olabilir. 🌿" },
+  { k: ["temizlik urunleri", "yuzey temizleyici", "bulasik deterjani", "konsantre temizlik"], c: "Mümkünse konsantre ürünler, geri dönüştürülebilir ambalajlı veya yeniden dolumlu temizlik ürünlerini tercih et. Aşırı miktarda ürün kullanmak yerine dozajına dikkat etmek hem bütçene hem çevreye yardımcı olur. 🌿" },
+  { k: ["geri donusum", "donusum", "sifir atik", "ayristirmak", "nereden atilir"], c: "Geri dönüşümün temeli: ayır, durula, doğru kutuya at. Atık adını Geri Dönüşüm sayfasındaki arama kutusuna yazarak nereye atılacağını bulabilirsin. Kutu renkleri ve kurallar belediyeden belediyeye değişebilir. ♻️" },
+  { k: ["gorev", "gorevler", "puan", "ilerleme"], c: "Günlük görevler sayfasında 6 görev var. Tamamladıkça işaretle, puanlarını ve ilerleme çubuğunu gör! ✅" },
+  { k: ["poset", "alisveris cantasi", "bez canta"], c: "Bez çanta kullanmak plastik poşet tüketimini azaltır. Poşet aldıysan çöp poşeti olarak yeniden kullan. 🛍️" }
 ];
 
 const ONERILER = ["Pil nereye atılır?", "Pet şişe hangi kutuya gider?", "Atık yağı nereye bırakmalıyım?", "Duş suyu nasıl tasarruf ederim?", "Kompost nedir?", "Çevre dostu temizlik nasıl yaparım?", "Elektrik faturasını nasıl düşürürüm?", "Karton kutu nereye atılır?"];
 
-function cevapBul(soru) {
-  const kelimeler = sadelestir(soru).split(" ");
-  const bosluklu = " " + kelimeler.join(" ") + " ";
-  for (const giris of DEMO_CEVAPLAR) {
-    for (const anahtar of giris.k) {
-      const a = sadelestir(anahtar);
-      const eslesti = a.includes(" ")
-        ? bosluklu.includes(" " + a + " ")                       // çok kelimeli: aynen geç
-        : kelimeler.some(w => w === a || (a.length > 3 && w.startsWith(a))); // tek kelime
-      if (eslesti) return giris.c;
+/* ---------- ASİSTAN: ANAHTAR KELİME + KONU EŞLEŞTİRME (DEMO) ----------
+   Bu bölüm yapay zekâ DEĞİLDİR. Soruyu sadeleştirir, kelimeleri Türkçe ekleriyle
+   birlikte tanır ve puanlayarak en uygun HAZIR cevabı seçer.
+   1) DEMO_CEVAPLAR içindeki "k" anahtarları aynen kullanılır (çok kelimeli = ardışık kelimeler).
+   2) KONULAR tablosu aynı konunun farklı soru biçimlerini yakalar.
+   Yazım:  "elektrik" = kelime ya da ekli hali (elektrik, elektriği, elektrikler)
+           "düşür*"   = bu harflerle başlayan her kelime (düşürmek, düşürürüm...)
+           "sağ ol"   = ardışık kelimeler
+   Puan: kesin ifade 20+, tek anahtar kelime 8, konu ana grubu 5, yardımcı grup 2.
+   Puan 5'in altındaysa varsayılan "cevabım yok" mesajı verilir. */
+const EKLER = [
+  "ler", "lar", "m", "im", "um", "iz", "uz", "imiz", "umuz", "niz", "nuz", "miz", "muz",
+  "in", "un", "i", "u", "yi", "yu", "e", "a", "ye", "ya", "de", "da", "te", "ta",
+  "den", "dan", "ten", "tan", "si", "su", "ni", "nu", "ne", "na", "nin", "nun", "yin", "yun",
+  "le", "la", "ile", "li", "lu", "lik", "luk"
+];
+
+// "kalan" tamamen Türkçe eklerden oluşuyor mu? (ör. "lerim" = ler + im)
+function ekMi(kalan) {
+  if (kalan === "") return true;
+  const olur = new Array(kalan.length + 1).fill(false);
+  olur[0] = true;
+  for (let i = 0; i < kalan.length; i++) {
+    if (!olur[i]) continue;
+    for (const ek of EKLER) {
+      if (kalan.startsWith(ek, i)) olur[i + ek.length] = true;
     }
   }
-  return "Bu soruya hazır bir örnek cevabım YOK. ğŸ™ˆ (Bu bir demo; gerçek yapay zekâ bağlı değil.) Åunları sorabilirsin: pil, plastik, cam, kâğıt, su tasarrufu, elektrik tasarrufu, kompost, atık yağ.";
+  return olur[kalan.length];
+}
+
+function kelimeEsles(kelime, kok) {
+  if (kok.endsWith("*")) return kelime.startsWith(kok.slice(0, -1));
+  return kelime.startsWith(kok) && ekMi(kelime.slice(kok.length));
+}
+
+// ifade: sadeleştirilmiş, boşlukla ayrılmış ("atik pil"); kelimelerde ardışık aranır
+function ifadeVarMi(kelimeler, ifade) {
+  if (!ifade) return false;
+  const parca = ifade.split(" ");
+  for (let i = 0; i + parca.length <= kelimeler.length; i++) {
+    if (parca.every((p, j) => kelimeEsles(kelimeler[i + j], p))) return true;
+  }
+  return false;
+}
+
+// ref = ilgili hazır cevabın ilk anahtarı. ana = konunun kendisi, yan = destekleyen sözcükler.
+// gerek = en az kaç ana grup bulunmalı (varsayılan 1). genel = yalnızca özel konu bulunamazsa kullan.
+const KONULAR = [
+  { ref: "merhaba", ana: [["merhaba", "selam", "slm", "naber"]] },
+  { ref: "tesekkur", ana: [["teşekkür", "sağ ol", "sağol", "eyvallah", "saol"]] },
+  { ref: "pil", ana: [["pil", "batarya"]], yan: [["atık", "düğme", "kalem", "şarjlı"]] },
+  { ref: "pet sise", ana: [["pet", "su şişesi", "meşrubat", "içecek şişesi"]], yan: [["şişe"]] },
+  { ref: "plastik", ana: [["plastik", "naylon", "poşet", "ambalaj"]] },
+  { ref: "cam", ana: [["cam", "kavanoz"]], yan: [["şişe"]] },
+  { ref: "kagit", ana: [["kâğıt", "kâğıd", "karton", "gazete", "defter", "dergi"]] },
+  { ref: "metal", ana: [["metal", "teneke", "konserve", "folyo", "alüminyum"]] },
+  { ref: "ampul", ana: [["ampul", "floresan", "telefon", "şarj aleti", "kulaklık", "elektronik atık"]] },
+  { ref: "lavaboya dokebilir miyim", ana: [["yağ"], ["lavabo", "boru", "kanalizasyon"]], gerek: 2 },
+  { ref: "atik yagi", ana: [["yağ"]], yan: [["atık", "kızartma", "yemek", "kullanılmış", "biriktir*", "bırak*", "teslim*", "toplama"]] },
+  { ref: "organik atik", ana: [["organik", "kabuk", "kabuğ", "telve"]] },
+  { ref: "su tasarrufu",
+    ana: [["su", "musluk", "çeşme"],
+          ["tasarruf*", "israf", "azal*", "düşür*", "düşer", "harca*", "damla*", "damlı*", "fatura", "kapat*", "tamir*"]],
+    gerek: 2 },
+  { ref: "dus", ana: [["duş"]], yan: [["su", "süre*", "dakika", "kısa", "tasarruf*", "litre"]] },
+  { ref: "elektrik tasarrufu", ana: [["elektrik", "elektriğ", "akım"]],
+    yan: [["fatura"], ["azal*", "düşür*", "düşer", "tasarruf*", "harca*", "indir*"]] },
+  { ref: "enerji", ana: [["enerji"]],
+    yan: [["tasarruf*", "azal*", "düşür*", "harca*"], ["led", "fiş", "bekleme", "gün ışığı"]] },
+  { ref: "isitma", ana: [["ısıtma", "ısınma", "ısıt*", "kalorifer", "termostat", "klima", "kombi"]],
+    yan: [["gider", "masraf", "fatura", "tasarruf*", "azal*", "düşür*"]] },
+  { ref: "cevre dostu temizlik", ana: [["temizlik", "temizle*", "sirke", "karbonat"]],
+    yan: [["çevre", "doğal", "dost*", "ucuz", "ev yapımı"]] },
+  { ref: "temizlik urunleri", ana: [["deterjan", "temizleyici", "konsantre", "dozaj"]], yan: [["ürün*", "ambalaj"]] },
+  { ref: "geri donusum", ana: [["geri dönüşüm", "dönüşüm", "dönüştür*", "ayrıştır*", "sıfır atık"]], genel: true },
+  { ref: "poset", ana: [["alışveriş çantası", "bez çanta", "çanta"]] }
+];
+
+function kokHazirla(x) {
+  return x.endsWith("*") ? sadelestir(x.slice(0, -1)) + "*" : sadelestir(x);
+}
+const KONU_TABLOSU = new Map();
+KONULAR.forEach(k => {
+  // ref, hazır cevabın ilk anahtarıyla (sadeleştirilmiş haliyle) karşılaştırılır
+  if (!DEMO_CEVAPLAR.some(g => sadelestir(g.k[0]) === sadelestir(k.ref))) console.warn("KONULAR: eşleşen hazır cevap yok ->", k.ref);
+  const grup = liste => (liste || []).map(g => g.map(kokHazirla));
+  KONU_TABLOSU.set(sadelestir(k.ref), { ana: grup(k.ana), yan: grup(k.yan), gerek: k.gerek || 1, genel: !!k.genel });
+});
+const GIRISLER = DEMO_CEVAPLAR.map(g => ({
+  c: g.c,
+  anahtarlar: g.k.map(sadelestir),
+  konu: KONU_TABLOSU.get(sadelestir(g.k[0]))
+}));
+
+function girisPuani(giris, kelimeler) {
+  let puan = 0;
+  giris.anahtarlar.forEach(a => {
+    if (!ifadeVarMi(kelimeler, a)) return;
+    const n = a.split(" ").length;
+    puan = Math.max(puan, n > 1 ? 20 + 5 * (n - 1) : 8);
+  });
+  const konu = giris.konu;
+  if (konu) {
+    const grupVar = g => g.some(k => ifadeVarMi(kelimeler, k));
+    const ana = konu.ana.filter(grupVar).length;
+    if (ana >= konu.gerek) puan += 5 * ana + 2 * konu.yan.filter(grupVar).length;
+  }
+  return puan;
+}
+
+const EN_AZ_PUAN = 5;
+function enIyiGiris(kelimeler) {
+  let en = null, enPuan = 0, genel = null, genelPuan = 0;
+  GIRISLER.forEach(giris => {
+    const p = girisPuani(giris, kelimeler);
+    if (p < EN_AZ_PUAN) return;
+    if (giris.konu && giris.konu.genel) {
+      if (p > genelPuan) { genel = giris; genelPuan = p; }
+    } else if (p > enPuan) {
+      en = giris; enPuan = p;
+    }
+  });
+  return en || genel;
+}
+
+function cevapBul(soru) {
+  const kelimeler = sadelestir(soru).split(" ").filter(Boolean);
+  const giris = enIyiGiris(kelimeler);
+  if (giris) return giris.c;
+  return "Bu soruya hazır bir örnek cevabım YOK. 🙈 (Bu bir demo; gerçek yapay zekâ bağlı değil.) Şunları sorabilirsin: pil, plastik, cam, kâğıt, su tasarrufu, elektrik tasarrufu, kompost, atık yağ.";
 }
 
 function mesajEkle(yazi, kim) {
@@ -436,7 +554,7 @@ function soruSor(soru) {
   soru = soru.trim();
   if (!soru) return;
   mesajEkle(soru, "ben");
-  const bekle = mesajEkle("Yazıyor...", "bot yaziyor");
+  const bekle = mesajEkle("Cevap aranıyor...", "bot yaziyor");
   setTimeout(() => {
     bekle.remove();
     mesajEkle(cevapBul(soru), "bot");
@@ -462,7 +580,7 @@ function asistaniHazirla() {
   });
 }
 
-/* ---------- BAÅLAT ---------- */
+/* ---------- BAŞLAT ---------- */
 kategorileriCiz();
 ipuclariniCiz();
 dusHesapla();
