@@ -34,7 +34,31 @@ Not: Uygulama gerçek bir yapay zekâ servisine bağlı olmadığı için asista
 
 
 
-2\. OpenCode ile Proje İncelemesi
+\## 2. Claude ile Uygulama Geliştirme
+
+
+
+\*\*Araç:\*\* Claude
+
+
+
+\*\*Prompt:\*\*
+
+
+
+Çevre Dostu Yaşam Asistanı adında, Türkçe, modern ve yeşil-beyaz tasarımlı etkileşimli bir uygulama prototipi oluştur. Kodlama bilmeyen bir öğrencinin bir günde tamamlayabileceği kadar basit tut. Ana ekranda karşılama alanı, geri dönüşüm rehberi, su ve enerji tasarrufu önerileri, günlük çevre görevleri ve kullanıcıların soru yazabileceği bir yapay zekâ asistanı bölümü olsun. Menü ve butonlar gerçekten çalışsın. Günlük görevler tamamlandı olarak işaretlenebilsin. Soru-cevap bölümünde gerçek bir yapay zekâ API bağlantısı yoksa bunu açıkça belirt ve örnek yanıtlarla çalışan bir demo hazırla. Harici ücretli servis gerektirmeyen bir MVP oluştur.
+
+
+
+\*\*Sonuç:\*\* Uygulamanın geliştirilmiş JavaScript sürümü hazırlandı ve uygulamanın özellikleri geliştirildi.
+
+
+
+\*\*Not:\*\* Asistan gerçek bir yapay zekâ servisine bağlı değildir.
+
+
+
+3\. OpenCode ile Proje İncelemesi
 
 
 
@@ -66,5 +90,5 @@ Geliştirme Süreci Notu
 
 
 
-Claude ve MCP kullanımı, gerçekten gerçekleştirildiğinde bu dosyaya ayrıca eklenecektir. Kullanılmayan araçlar kullanılmış gibi gösterilmeyecektir.
+MCP bu proje kapsamında henüz kullanılmamıştır. Kullanılmayan araçlar kullanılmış gibi gösterilmemiştir.
 
